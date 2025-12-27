@@ -11,19 +11,35 @@ window.movePrompt = function(newP, newN, target, mode) {
 
     const isAppend = mode.toLowerCase().includes("aggiungi");
 
-    // Funzione interna per aggiornare il testo
-    const updateText = (el, newText) => {
-        if (!newText) return;
+    const updateText = (el, styleText) => {
+        if (!styleText) return;
         
-        let finalValue = newText.trim();
-        if (isAppend && el.value.trim().length > 0) {
-            finalValue = el.value.trim() + ", " + newText.trim();
+        let currentText = el.value.trim();
+        let style = styleText.trim();
+        let finalValue = "";
+
+        if (isAppend && currentText.length > 0) {
+            // Controlla se lo stile contiene il tag {prompt}
+            if (style.includes("{prompt}")) {
+                // Sostituisce tutte le occorrenze di {prompt} con il testo attuale
+                finalValue = style.replaceAll("{prompt}", currentText);
+            } else {
+                // Se non c'è il tag, aggiunge semplicemente in coda con una virgola
+                finalValue = currentText + ", " + style;
+            }
+        } else {
+            // Modalità Sostituisci (o casella vuota): 
+            // Rimuoviamo il tag {prompt} se presente per pulizia, 
+            // dato che non c'è un prompt precedente da inserire.
+            finalValue = style.replaceAll("{prompt}", "");
         }
 
-        // Metodo standard per cambiare il valore
+        // Pulizia virgole doppie che potrebbero crearsi
+        finalValue = finalValue.replace(/,\s*,/g, ',').replace(/^,\s*/, '').trim();
+
         el.value = finalValue;
 
-        // Scateniamo l'evento 'input' che è quello che Physton ascolta
+        // Notifica a Forge/Physton del cambiamento
         const event = new Event('input', { bubbles: true });
         el.dispatchEvent(event);
     };
