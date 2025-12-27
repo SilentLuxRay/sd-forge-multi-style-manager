@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+# Escludi tutti i file in styles tranne quello di esempio
+styles/*
+!styles/default_styles.csv
+!styles/game_style.csv
+!styles/kamph_style.csv
+!styles/sai_style.csv
+!styles/misc_style.csv
